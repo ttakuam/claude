@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python split_tickets.py:*)",
+      "Bash(python3:*)",
+      "Bash(node:*)",
+      "Bash(python:*)",
+      "Bash(awk:*)",
+      "Bash(ls:*)",
+      "Bash(git --version:*)",
+      "Bash(git ls-remote:*)",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
