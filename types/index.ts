@@ -2,50 +2,8 @@
  * アプリケーション全体で使用する型定義
  */
 
-// 車両ステータス
-export type VehicleStatus = 'published' | 'sold'
-
-// 問い合わせ種類
-export type InquiryType = 'inquiry' | 'visit_reservation'
-
-// 車両情報
-export interface Vehicle {
-  id: string
-  vehicle_id: string
-  manufacturer: string
-  model: string
-  grade?: string
-  price: number
-  year: number
-  mileage: number
-  inspection_date?: string
-  accident_history: boolean
-  notes?: string
-  status: VehicleStatus
-  created_at: string
-  updated_at: string
-}
-
-// 車両画像
-export interface VehicleImage {
-  id: string
-  vehicle_id: string
-  image_url: string
-  display_order: number
-  created_at: string
-}
-
-// 問い合わせ
-export interface Inquiry {
-  id: string
-  vehicle_id?: string
-  name: string
-  email: string
-  phone?: string
-  inquiry_type: InquiryType
-  message?: string
-  created_at: string
-}
+// データベース型をre-export
+export * from './database'
 
 // 検索フィルター
 export interface VehicleFilter {
@@ -58,8 +16,50 @@ export interface VehicleFilter {
   excludeAccidentHistory?: boolean
 }
 
-// データベースレスポンス
-export interface DatabaseResponse<T> {
-  data: T | null
-  error: Error | null
+// 検索パラメータ（ページネーション含む）
+export interface SearchParams extends VehicleFilter {
+  page?: number
+  limit?: number
+  sortBy?: 'created_at' | 'price' | 'year' | 'mileage'
+  sortOrder?: 'asc' | 'desc'
+}
+
+// ページネーション情報
+export interface PaginationInfo {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
+
+// ページネーション付きレスポンス
+export interface PaginatedResponse<T> {
+  data: T[]
+  pagination: PaginationInfo
+}
+
+// APIレスポンス
+export interface ApiResponse<T = unknown> {
+  success: boolean
+  data?: T
+  error?: string
+}
+
+// 問い合わせリクエスト
+export interface InquiryRequest {
+  vehicleId?: string
+  vehicleInfo: string
+  name: string
+  email: string
+  phone?: string
+  inquiryType: 'inquiry' | 'visit_reservation'
+  message?: string
+}
+
+// 統計情報（ダッシュボード用）
+export interface DashboardStats {
+  totalVehicles: number
+  publishedVehicles: number
+  soldVehicles: number
+  totalInquiries: number
 }
