@@ -36,6 +36,15 @@ export async function getVehicles(filter?: VehicleFilter): Promise<VehicleWithIm
   if (filter?.excludeAccidentHistory) {
     query = query.eq('accident_history', false)
   }
+  if (filter?.vehicleCondition) {
+    query = query.eq('vehicle_condition', filter.vehicleCondition)
+  }
+  if (filter?.bodyColor) {
+    query = query.eq('body_color', filter.bodyColor)
+  }
+  if (filter?.sellingStoreId) {
+    query = query.eq('selling_store_id', filter.sellingStoreId)
+  }
 
   const { data, error } = await query
 
@@ -80,6 +89,15 @@ export async function getVehiclesServer(filter?: VehicleFilter): Promise<Vehicle
   }
   if (filter?.excludeAccidentHistory) {
     query = query.eq('accident_history', false)
+  }
+  if (filter?.vehicleCondition) {
+    query = query.eq('vehicle_condition', filter.vehicleCondition)
+  }
+  if (filter?.bodyColor) {
+    query = query.eq('body_color', filter.bodyColor)
+  }
+  if (filter?.sellingStoreId) {
+    query = query.eq('selling_store_id', filter.sellingStoreId)
   }
 
   const { data, error } = await query
@@ -132,6 +150,27 @@ export async function getVehiclesByIds(ids: string[]): Promise<VehicleWithImages
   }
 
   return (data || []) as VehicleWithImages[]
+}
+
+/**
+ * 車体色一覧を取得（サーバー用）
+ */
+export async function getBodyColors(): Promise<string[]> {
+  const supabase = await createServerClient()
+
+  const { data, error } = await supabase
+    .from('vehicles')
+    .select('body_color')
+    .eq('status', 'published')
+    .not('body_color', 'is', null)
+
+  if (error) {
+    console.error('Error fetching body colors:', error)
+    return []
+  }
+
+  const colors = [...new Set(data?.map(v => v.body_color).filter(Boolean) || [])]
+  return colors.sort() as string[]
 }
 
 /**

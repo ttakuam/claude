@@ -21,7 +21,25 @@
       "Bash(git remote set-url:*)",
       "Bash(npx create-next-app@latest:*)",
       "Bash(npm install:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "WebFetch(domain:www.fujiwa-cs.co.jp)",
+      "WebSearch",
+      "Bash(cat:*)",
+      "WebFetch(domain:web.archive.org)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(taskkill:*)",
+      "Bash(timeout:*)",
+      "Bash(powershell -Command:*)",
+      "WebFetch(domain:www.nextage.jp)",
+      "mcp__supabase__list_projects",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__apply_migration",
+      "Bash(npx next build:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(cmd /c \"taskkill /PID 53816 /F\")"
     ]
   }
 }

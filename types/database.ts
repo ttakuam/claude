@@ -5,6 +5,12 @@
 // 車両ステータス
 export type VehicleStatus = 'published' | 'sold'
 
+// ボディタイプ
+export type BodyType = 'suv' | 'minivan' | 'sedan' | 'compact' | 'wagon'
+
+// 車両状態
+export type VehicleCondition = 'new' | 'like_new' | 'used'
+
 // 問い合わせ種類
 export type InquiryType = 'inquiry' | 'visit_reservation'
 
@@ -21,6 +27,12 @@ export interface Vehicle {
   inspection_date: string | null
   accident_history: boolean
   notes: string | null
+  body_type: BodyType | null
+  engine_displacement: number | null
+  vehicle_condition: VehicleCondition
+  additional_costs: number
+  body_color: string | null
+  selling_store_id: string | null
   status: VehicleStatus
   created_at: string
   updated_at: string
@@ -38,6 +50,12 @@ export interface VehicleInsert {
   inspection_date?: string | null
   accident_history?: boolean
   notes?: string | null
+  body_type?: BodyType | null
+  engine_displacement?: number | null
+  vehicle_condition?: VehicleCondition
+  additional_costs?: number
+  body_color?: string | null
+  selling_store_id?: string | null
   status?: VehicleStatus
 }
 
@@ -53,6 +71,12 @@ export interface VehicleUpdate {
   inspection_date?: string | null
   accident_history?: boolean
   notes?: string | null
+  body_type?: BodyType | null
+  engine_displacement?: number | null
+  vehicle_condition?: VehicleCondition
+  additional_costs?: number
+  body_color?: string | null
+  selling_store_id?: string | null
   status?: VehicleStatus
 }
 

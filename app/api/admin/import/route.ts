@@ -66,6 +66,11 @@ export async function POST(request: NextRequest) {
           inspection_date: row.inspection_date || null,
           accident_history: row.accident_history?.toLowerCase() === 'true',
           notes: row.notes || null,
+          engine_displacement: row.engine_displacement ? parseInt(row.engine_displacement, 10) : null,
+          vehicle_condition: row.vehicle_condition || 'used',
+          additional_costs: row.additional_costs ? parseInt(row.additional_costs, 10) : 0,
+          body_color: row.body_color || null,
+          selling_store_id: row.selling_store_id || null,
           status: 'published',
         }
 

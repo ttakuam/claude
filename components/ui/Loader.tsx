@@ -13,7 +13,7 @@ export function Loader({ size = 'md', className }: LoaderProps) {
     lg: 'h-12 w-12',
   }
 
-  return <Loader2 className={cn('animate-spin text-blue-600', sizes[size], className)} />
+  return <Loader2 className={cn('animate-spin text-primary-700', sizes[size], className)} />
 }
 
 interface FullPageLoaderProps {

@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button, Input } from '@/components/ui'
 import { Loader } from '@/components/ui/Loader'
-import type { Vehicle, VehicleStatus } from '@/types'
+import type { Vehicle, VehicleStatus, VehicleCondition } from '@/types'
+import { STORES } from '@/data/stores'
 
 interface VehicleFormProps {
   vehicle?: Vehicle
@@ -23,6 +24,11 @@ interface FormData {
   accident_history: boolean
   notes: string
   status: VehicleStatus
+  engine_displacement: string
+  vehicle_condition: VehicleCondition
+  additional_costs: string
+  body_color: string
+  selling_store_id: string
 }
 
 export function VehicleForm({ vehicle, mode }: VehicleFormProps) {
@@ -42,6 +48,11 @@ export function VehicleForm({ vehicle, mode }: VehicleFormProps) {
     accident_history: vehicle?.accident_history || false,
     notes: vehicle?.notes || '',
     status: vehicle?.status || 'published',
+    engine_displacement: vehicle?.engine_displacement?.toString() || '',
+    vehicle_condition: vehicle?.vehicle_condition || 'used',
+    additional_costs: vehicle?.additional_costs?.toString() || '0',
+    body_color: vehicle?.body_color || '',
+    selling_store_id: vehicle?.selling_store_id || '',
   })
 
   const handleChange = (
@@ -82,6 +93,11 @@ export function VehicleForm({ vehicle, mode }: VehicleFormProps) {
           accident_history: formData.accident_history,
           notes: formData.notes || null,
           status: formData.status,
+          engine_displacement: formData.engine_displacement ? parseInt(formData.engine_displacement, 10) : null,
+          vehicle_condition: formData.vehicle_condition,
+          additional_costs: parseInt(formData.additional_costs, 10) || 0,
+          body_color: formData.body_color || null,
+          selling_store_id: formData.selling_store_id || null,
         }),
       })
 
@@ -134,6 +150,35 @@ export function VehicleForm({ vehicle, mode }: VehicleFormProps) {
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">車検満了日</label>
           <Input type="date" name="inspection_date" value={formData.inspection_date} onChange={handleChange} />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">排気量（cc）</label>
+          <Input type="number" name="engine_displacement" value={formData.engine_displacement} onChange={handleChange} placeholder="1500" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">車両状態</label>
+          <select name="vehicle_condition" value={formData.vehicle_condition} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="used">中古車</option>
+            <option value="like_new">新古車</option>
+            <option value="new">新車</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">諸費用（円）</label>
+          <Input type="number" name="additional_costs" value={formData.additional_costs} onChange={handleChange} placeholder="150000" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">車体色</label>
+          <Input type="text" name="body_color" value={formData.body_color} onChange={handleChange} placeholder="ホワイトパール" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">販売店舗</label>
+          <select name="selling_store_id" value={formData.selling_store_id} onChange={handleChange} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">未設定</option>
+            {STORES.filter(s => s.businesses.some(b => b.category === 'vehicle')).map(store => (
+              <option key={store.id} value={store.id}>{store.name}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">ステータス</label>

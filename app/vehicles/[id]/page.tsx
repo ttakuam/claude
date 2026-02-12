@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
-import { ChevronLeft, AlertTriangle } from 'lucide-react'
 import { getVehicleById } from '@/lib/vehicles'
-import { formatPrice } from '@/lib/utils'
+import { formatPrice, getConditionLabel } from '@/lib/utils'
 import { UserLayout } from '@/components/layout/UserLayout'
 import { VehicleDetailClient } from './VehicleDetailClient'
+import { STORES } from '@/data/stores'
+import { StoreCard } from '@/components/features/stores/StoreCard'
+import { ImageGallery } from '@/components/features/vehicles/ImageGallery'
 
 interface VehicleDetailPageProps {
   params: Promise<{ id: string }>
@@ -20,119 +21,129 @@ export default async function VehicleDetailPage({ params }: VehicleDetailPagePro
   }
 
   const images = vehicle.vehicle_images || []
-  const mainImage = images[0]?.image_url || '/images/no-image.png'
+  const totalPrice = vehicle.price + (vehicle.additional_costs || 0)
+  const sellingStore = vehicle.selling_store_id
+    ? STORES.find(s => s.id === vehicle.selling_store_id)
+    : null
 
   return (
     <UserLayout>
-      <div className="container mx-auto px-4 py-8">
-        {/* パンくずナビ */}
-        <nav className="mb-6">
-          <Link
-            href="/"
-            className="inline-flex items-center text-blue-600 hover:text-blue-800"
-          >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            車両一覧に戻る
-          </Link>
-        </nav>
+      <div className="bg-[#f5f5f5] min-h-screen">
+        <div className="max-w-[1024px] mx-auto px-4 py-5">
+          {/* パンくずナビ */}
+          <nav className="mb-4 text-xs text-gray-500 flex items-center gap-1">
+            <Link href="/" className="hover:text-primary-700 transition-colors">ホーム</Link>
+            <span>&gt;</span>
+            <Link href="/vehicles" className="hover:text-primary-700 transition-colors">車両販売</Link>
+            <span>&gt;</span>
+            <span className="text-gray-800">車両詳細</span>
+          </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* 画像ギャラリー */}
-          <div className="space-y-4">
-            {/* メイン画像 */}
-            <div className="relative aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden">
-              <Image
-                src={mainImage}
-                alt={`${vehicle.manufacturer} ${vehicle.model}`}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                priority
-              />
-              {vehicle.accident_history && (
-                <div className="absolute bottom-4 left-4 flex items-center gap-2 px-3 py-2 bg-yellow-100 text-yellow-800 text-sm font-medium rounded-lg">
-                  <AlertTriangle className="h-4 w-4" />
-                  修復歴あり
-                </div>
-              )}
-            </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* 画像ギャラリー */}
+            <ImageGallery
+              images={images}
+              alt={`${vehicle.manufacturer} ${vehicle.model}`}
+              accidentHistory={vehicle.accident_history}
+            />
 
-            {/* サムネイル */}
-            {images.length > 1 && (
-              <div className="grid grid-cols-4 gap-2">
-                {images.map((img, index) => (
-                  <div
-                    key={img.id}
-                    className="relative aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden"
-                  >
-                    <Image
-                      src={img.image_url}
-                      alt={`${vehicle.manufacturer} ${vehicle.model} - ${index + 1}`}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 1024px) 25vw, 12vw"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* 車両情報 */}
-          <div className="space-y-6">
-            {/* タイトルと価格 */}
+            {/* 車両情報 */}
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                {vehicle.manufacturer} {vehicle.model}
-              </h1>
-              {vehicle.grade && (
-                <p className="text-lg text-gray-500 mt-1">{vehicle.grade}</p>
-              )}
-              <p className="mt-4 text-3xl font-bold text-blue-600">
-                {formatPrice(vehicle.price)}
-              </p>
-            </div>
-
-            {/* スペック */}
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">基本情報</h2>
-              <dl className="grid grid-cols-2 gap-4">
-                <div>
-                  <dt className="text-sm text-gray-500">年式</dt>
-                  <dd className="text-lg font-medium text-gray-900">{vehicle.year}年</dd>
+              {/* タイトルと価格 */}
+              <div className="bg-white border border-[#ddd] p-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-lg font-bold text-gray-900 leading-tight">
+                    {vehicle.manufacturer} {vehicle.model}
+                  </h1>
+                  {vehicle.vehicle_condition && vehicle.vehicle_condition !== 'used' && (
+                    <span className={`px-2 py-0.5 text-xs font-bold text-white rounded ${
+                      vehicle.vehicle_condition === 'new' ? 'bg-red-500' : 'bg-blue-500'
+                    }`}>
+                      {getConditionLabel(vehicle.vehicle_condition)}
+                    </span>
+                  )}
                 </div>
-                <div>
-                  <dt className="text-sm text-gray-500">走行距離</dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {vehicle.mileage.toLocaleString()}km
-                  </dd>
+                {vehicle.grade && (
+                  <p className="text-sm text-gray-500 mt-0.5">{vehicle.grade}</p>
+                )}
+                <div className="mt-3 pt-3 border-t border-dashed border-gray-200">
+                  <span className="text-xs text-gray-500">支払総額</span>
+                  <p className="text-2xl font-bold text-price leading-tight">
+                    {formatPrice(totalPrice)}
+                  </p>
+                  <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+                    <span>車両本体価格 {formatPrice(vehicle.price)}</span>
+                    {vehicle.additional_costs > 0 && (
+                      <span>＋ 諸費用 {formatPrice(vehicle.additional_costs)}</span>
+                    )}
+                  </div>
                 </div>
-                <div>
-                  <dt className="text-sm text-gray-500">車検</dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {vehicle.inspection_date || '要確認'}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-sm text-gray-500">修復歴</dt>
-                  <dd className="text-lg font-medium text-gray-900">
-                    {vehicle.accident_history ? 'あり' : 'なし'}
-                  </dd>
-                </div>
-              </dl>
-            </div>
-
-            {/* 説明文 */}
-            {vehicle.notes && (
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">車両説明</h2>
-                <p className="text-gray-700 whitespace-pre-wrap">{vehicle.notes}</p>
               </div>
-            )}
 
-            {/* お気に入り・問い合わせボタン（クライアントコンポーネント） */}
-            <VehicleDetailClient vehicle={vehicle} />
+              {/* スペックテーブル */}
+              <div className="bg-white border border-[#ddd] mb-4">
+                <h2 className="text-sm font-bold text-white bg-primary-800 px-4 py-2">基本情報</h2>
+                <table className="w-full text-sm">
+                  <tbody>
+                    <tr className="border-b border-[#eee]">
+                      <th className="text-left text-xs text-gray-500 bg-[#f9f9f9] px-4 py-2.5 w-24 font-normal">年式</th>
+                      <td className="px-4 py-2.5">{vehicle.year}年</td>
+                    </tr>
+                    <tr className="border-b border-[#eee]">
+                      <th className="text-left text-xs text-gray-500 bg-[#f9f9f9] px-4 py-2.5 w-24 font-normal">走行距離</th>
+                      <td className="px-4 py-2.5">{vehicle.mileage.toLocaleString()}km</td>
+                    </tr>
+                    <tr className="border-b border-[#eee]">
+                      <th className="text-left text-xs text-gray-500 bg-[#f9f9f9] px-4 py-2.5 w-24 font-normal">車検</th>
+                      <td className="px-4 py-2.5">{vehicle.inspection_date || '要確認'}</td>
+                    </tr>
+                    <tr className="border-b border-[#eee]">
+                      <th className="text-left text-xs text-gray-500 bg-[#f9f9f9] px-4 py-2.5 w-24 font-normal">修復歴</th>
+                      <td className="px-4 py-2.5">{vehicle.accident_history ? 'あり' : 'なし'}</td>
+                    </tr>
+                    {vehicle.engine_displacement && (
+                      <tr className="border-b border-[#eee]">
+                        <th className="text-left text-xs text-gray-500 bg-[#f9f9f9] px-4 py-2.5 w-24 font-normal">排気量</th>
+                        <td className="px-4 py-2.5">{vehicle.engine_displacement.toLocaleString()}cc</td>
+                      </tr>
+                    )}
+                    {vehicle.body_color && (
+                      <tr className="border-b border-[#eee]">
+                        <th className="text-left text-xs text-gray-500 bg-[#f9f9f9] px-4 py-2.5 w-24 font-normal">車体色</th>
+                        <td className="px-4 py-2.5">{vehicle.body_color}</td>
+                      </tr>
+                    )}
+                    <tr>
+                      <th className="text-left text-xs text-gray-500 bg-[#f9f9f9] px-4 py-2.5 w-24 font-normal">車両状態</th>
+                      <td className="px-4 py-2.5">{getConditionLabel(vehicle.vehicle_condition)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* 説明文 */}
+              {vehicle.notes && (
+                <div className="bg-white border border-[#ddd] p-4 mb-4">
+                  <h2 className="text-sm font-bold text-gray-800 mb-2">車両説明</h2>
+                  <p className="text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">{vehicle.notes}</p>
+                </div>
+              )}
+
+              {/* 販売店舗 */}
+              {sellingStore && (
+                <div className="mb-4">
+                  <h2 className="text-sm font-bold text-gray-800 mb-2">販売店舗</h2>
+                  <StoreCard store={sellingStore} />
+                </div>
+              )}
+
+              {/* お気に入り・問い合わせ */}
+              <VehicleDetailClient vehicle={vehicle} storePhone={sellingStore?.phone} />
+            </div>
           </div>
+
+          {/* スマホ固定CTA分の余白 */}
+          <div className="h-16 sm:hidden" />
         </div>
       </div>
     </UserLayout>

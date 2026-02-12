@@ -94,7 +94,7 @@ export function InquiryForm({ vehicleId, vehicleInfo, onSuccess }: InquiryFormPr
           name="inquiryType"
           value={formData.inquiryType}
           onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600"
         >
           <option value="inquiry">お問い合わせ</option>
           <option value="visit_reservation">来店予約</option>
@@ -156,7 +156,7 @@ export function InquiryForm({ vehicleId, vehicleInfo, onSuccess }: InquiryFormPr
           onChange={handleChange}
           rows={4}
           placeholder="ご質問やご希望があればお書きください"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 resize-none"
         />
       </div>
 

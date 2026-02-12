@@ -8,12 +8,16 @@ export * from './database'
 // 検索フィルター
 export interface VehicleFilter {
   manufacturer?: string
+  bodyType?: string
   minPrice?: number
   maxPrice?: number
   minYear?: number
   maxYear?: number
   maxMileage?: number
   excludeAccidentHistory?: boolean
+  vehicleCondition?: string
+  bodyColor?: string
+  sellingStoreId?: string
 }
 
 // 検索パラメータ（ページネーション含む）
@@ -62,4 +66,37 @@ export interface DashboardStats {
   publishedVehicles: number
   soldVehicles: number
   totalInquiries: number
+}
+
+// ===== 店舗関連 =====
+
+/** 事業カテゴリ */
+export type BusinessCategory =
+  | 'shaken'
+  | 'vehicle'
+  | 'ss'
+  | 'chemical'
+  | 'insurance'
+  | 'food'
+  | 'tire'
+  | 'oil'
+
+/** 事業の詳細情報（バッジ表示用） */
+export interface BusinessDetail {
+  category: BusinessCategory
+  label: string
+  subLabel?: string
+}
+
+/** 店舗データ */
+export interface Store {
+  id: string
+  name: string
+  businesses: BusinessDetail[]
+  phone: string
+  address: string
+  businessHours: string
+  closedDays: string
+  imageUrl: string
+  googleMapsEmbedUrl: string
 }
